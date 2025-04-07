@@ -1,0 +1,147 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhuccModDZ/PhuccMod/refs/heads/main/Login')))()
+
+local Window = OrionLib:MakeWindow({Name = "PhuccMod", HidePremium = false, SaveConfig = false, ConfigFolder = "dxl_bf"})
+
+local Tab = Window:MakeTab({
+	Name = "Scripts BloxFruit",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab2 = Window:MakeTab({
+	Name = "Mod Client",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab3 = Window:MakeTab({
+	Name = "More",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab3:AddButton({
+	Name = "Updating : Fix Lag",
+	Callback = function()
+    title = "Updating"
+end
+})
+
+Tab3:AddButton({
+	Name = "Anti Kick",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+     loadstring(game:HttpGet("https://pastebin.com/raw/FPfaukXN"))()
+end
+})
+
+Tab2:AddButton({
+	Name = "Arceus X",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/chillz-workshop/main/Arceus%20X%20V3"))()
+end
+})
+
+Tab2:AddButton({
+	Name = "Krnl",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+      loadstring(game:HttpGet("https://pastebin.com/raw/M3HjLPU7"))()
+end
+})
+
+Tab2:AddButton({
+	Name = "Synapse X",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+      loadstring(game:HttpGet("https://pastebin.com/raw/QmqSgQ3K"))()
+end
+})
+
+Tab2:AddButton({
+	Name = "Keyboard",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+     loadstring(game:HttpGet("https://raw.githubusercontent.com/advxzivhsjjdhxhsidifvsh/mobkeyboard/main/main.txt", true))()
+end
+})
+
+Tab:AddButton({
+	Name = "Alchemy",
+	Callback = function()
+       loadstring(game:HttpGet("https://scripts.alchemyhub.xyz"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Hiru Hub",
+	Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/NGUYENVUDUY1/Source/main/HiruHub.lua"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Jack-J97",
+	Callback = function()
+	  loadstring(game:HttpGet("https://raw.githubusercontent.com/kimprobloxdz/Jack-J97/refs/heads/main/Jack-J97.txt"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Banana Free",
+    Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhTuanDzai-Hub/Banana-Hub/refs/heads/main/Banana-Free.lua"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Teddy hub",
+	Callback = function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Teddyseetink/Haidepzai/refs/heads/main/TEDDYHUB-FREEMIUM"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Auto Farm",
+	Callback = function()
+        repeat wait(5) until game:IsLoaded()
+        loadstring(game:HttpGet("https://api.realaya.xyz/v1/files/l/73mkp0aqyfo4ypy8hvl0nz10lq49fey5.lua"))()
+end
+})
+
+Tab:AddButton({
+	Name = "Updating : Farm Chests",
+	Callback = function()
+      title = "Updating"  
+      end
+})
+
+Tab:AddButton({
+	Name = "Redz",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/newredz/BloxFruits/refs/heads/main/Source.luau"))()
+    end
+})
+
+Tab:AddButton({
+	Name = "Xero hub",
+	Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Xero2409/XeroHub/refs/heads/main/main.lua"))()
+end
+})
+
+Tab:AddButton({
+	Name = "RubuRoblox",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/RubuRoblox/refs/heads/main/RubuBF"))()
+end
+})
+
+Tab:AddButton({
+	Name = "Vxeze hub",
+	Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/Skidlamcho.txt"))()
+end
+})
+
