@@ -1,6 +1,6 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhuccModDZ/PhuccMod/refs/heads/main/Login')))()
 
-local Window = OrionLib:MakeWindow({Name = "PhuccMod [premium]", NickName = "Updating...", HidePremium = false, SaveConfig = false, ConfigFolder = "dxl_bf"})
+local Window = OrionLib:MakeWindow({Name = "PhuccMod premium", HidePremium = false, SaveConfig = false, ConfigFolder = "dxl_bf"})
 
 local Tab = Window:MakeTab({
 	Name = "BloxFruit",
@@ -24,12 +24,6 @@ local Tab4 = Window:MakeTab({
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
 })
-
-local Tap5 = Window:MakeTap({
-        Name = "Fix Updating"
-        Icon = "rbxassetid://4483345998"
-        PremiumOnly = false
-}) 
 
 Tab4:AddButton({
 	Name = "Updating : Fix Lag",
@@ -90,13 +84,6 @@ Tap2:AddButton({
 	Callback = function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
 		end
-})
-
-Tap2:AddButton({
-	Name = "____Updating____"
-	Callback = function()
-		Print = "Updating"
-	end
 })
 
 Tab:AddButton({
