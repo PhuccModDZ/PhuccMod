@@ -1,0 +1,76 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+local HitboxSize = 10
+local HitboxObjects = {}
+
+-- UI Setup
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 150, 0, 80)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Active = true
+Frame.Draggable = true
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+local SizeLabel = Instance.new("TextLabel", Frame)
+SizeLabel.Size = UDim2.new(1, 0, 0.5, 0)
+SizeLabel.Text = "Size: " .. HitboxSize
+SizeLabel.TextColor3 = Color3.new(1, 1, 1)
+SizeLabel.BackgroundTransparency = 1
+
+local IncreaseBtn = Instance.new("TextButton", Frame)
+IncreaseBtn.Size = UDim2.new(0.4, 0, 0.4, 0)
+IncreaseBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
+IncreaseBtn.Text = "+"
+IncreaseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+IncreaseBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", IncreaseBtn)
+
+local DecreaseBtn = Instance.new("TextButton", Frame)
+DecreaseBtn.Size = UDim2.new(0.4, 0, 0.4, 0)
+DecreaseBtn.Position = UDim2.new(0.55, 0, 0.5, 0)
+DecreaseBtn.Text = "-"
+DecreaseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+DecreaseBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", DecreaseBtn)
+
+IncreaseBtn.MouseButton1Click:Connect(function()
+    HitboxSize = HitboxSize + 5
+    SizeLabel.Text = "Size: " .. HitboxSize
+end)
+
+DecreaseBtn.MouseButton1Click:Connect(function()
+    HitboxSize = math.max(2, HitboxSize - 5)
+    SizeLabel.Text = "Size: " .. HitboxSize
+end)
+
+-- Hitbox Logic
+RunService.RenderStepped:Connect(function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local RootPart = player.Character.HumanoidRootPart
+            
+            -- Setup visual border if it doesn't exist
+            if not HitboxObjects[player] then
+                local Border = Instance.new("SelectionBox", RootPart)
+                Border.Color3 = Color3.fromRGB(255, 0, 0)
+                Border.LineThickness = 0.5
+                Border.Adornee = RootPart
+                HitboxObjects[player] = Border
+            end
+            
+            RootPart.Size = Vector3.new(HitboxSize, HitboxSize, HitboxSize)
+            RootPart.Transparency = 0.9
+            RootPart.CanCollide = false
+        end
+    end
+end)
+
+-- Cleanup when player leaves
+Players.PlayerRemoving:Connect(function(player)
+    HitboxObjects[player] = nil
+end)
