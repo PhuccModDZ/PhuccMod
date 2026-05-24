@@ -58,7 +58,7 @@ RunService.RenderStepped:Connect(function()
             if not HitboxObjects[player] then
                 local Border = Instance.new("SelectionBox", RootPart)
                 Border.Color3 = Color3.fromRGB(255, 0, 0)
-                Border.LineThickness = 0.02
+                Border.LineThickness = 0.005
                 Border.Adornee = RootPart
                 HitboxObjects[player] = Border
             end
