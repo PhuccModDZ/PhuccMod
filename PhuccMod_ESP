@@ -1,0 +1,107 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/PhuccModDZ/PhuccMod/refs/heads/main/Login')))()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local ESPEnabled = false
+local ESPObjects = {}
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "KrisszESP_UI"
+ScreenGui.Parent = game:GetService("CoreGui")
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 120, 0, 40)
+Frame.Position = UDim2.new(0.05, 0, 0.05, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BorderSizePixel = 0
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+local dragging, dragInput, dragStart, startPos
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+local ToggleBtn = Instance.new("TextButton", Frame)
+ToggleBtn.Size = UDim2.new(0.9, 0, 0.7, 0)
+ToggleBtn.Position = UDim2.new(0.05, 0, 0.15, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+ToggleBtn.Text = "Phucc ESP: OFF"
+ToggleBtn.TextColor3 = Color3.new(1, 1, 1)
+ToggleBtn.TextSize = 8
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 6)
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    ESPEnabled = not ESPEnabled
+    ToggleBtn.Text = ESPEnabled and "Phucc ESP: ON" or "Phucc ESP: OFF"
+end)
+
+local function CleanupESP(player)
+    if ESPObjects[player] then
+        for _, obj in pairs(ESPObjects[player]) do obj:Remove() end
+        ESPObjects[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if ESPEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if not ESPObjects[player] then
+                ESPObjects[player] = {
+                    Line = Drawing.new("Line"),
+                    Text = Drawing.new("Text"),
+                    Box = Drawing.new("Square")
+                }
+                ESPObjects[player].Line.Thickness = 0.3
+                ESPObjects[player].Line.Color = Color3.new(1, 1, 1)
+                ESPObjects[player].Text.Size = 10
+                ESPObjects[player].Box.Color = Color3.fromRGB(255, 0, 0)
+                ESPObjects[player].Box.Filled = false
+                ESPObjects[player].Box.Thickness = 1
+            end
+            local RootPart = player.Character.HumanoidRootPart
+            local Pos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
+            local Top, _ = Camera:WorldToViewportPoint((RootPart.CFrame * CFrame.new(0, 3, 0)).Position)
+            local Bot, _ = Camera:WorldToViewportPoint((RootPart.CFrame * CFrame.new(0, -3, 0)).Position)
+            if OnScreen then
+                local h = math.abs(Top.Y - Bot.Y)
+                ESPObjects[player].Line.From = Vector2.new(Camera.ViewportSize.X / 2, 0)
+                ESPObjects[player].Line.To = Vector2.new(Pos.X, Pos.Y - (h / 2))
+                ESPObjects[player].Line.Visible = true
+                ESPObjects[player].Box.Size = Vector2.new(h / 2, h)
+                ESPObjects[player].Box.Position = Vector2.new(Pos.X - h / 4, Pos.Y - h / 2)
+                ESPObjects[player].Box.Visible = true
+                ESPObjects[player].Text.Position = Vector2.new(Pos.X, Pos.Y - h / 2 - 20)
+                ESPObjects[player].Text.Text = player.Name
+                ESPObjects[player].Text.Visible = true
+            else
+                for _, obj in pairs(ESPObjects[player]) do obj.Visible = false end
+            end
+        elseif ESPObjects[player] then
+            for _, obj in pairs(ESPObjects[player]) do obj.Visible = false end
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(CleanupESP)
