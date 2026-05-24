@@ -1,0 +1,58 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local WalkSpeed = 30
+local JumpPower = 100
+
+-- UI Setup
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 180, 0, 120)
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Active = true
+Frame.Draggable = true
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+local WSLabel = Instance.new("TextLabel", Frame)
+WSLabel.Size = UDim2.new(1, 0, 0.25, 0)
+WSLabel.Text = "WalkSpeed: " .. WalkSpeed
+WSLabel.TextColor3 = Color3.new(1, 1, 1)
+WSLabel.BackgroundTransparency = 1
+
+local JPLabel = Instance.new("TextLabel", Frame)
+JPLabel.Size = UDim2.new(1, 0, 0.25, 0)
+JPLabel.Position = UDim2.new(0, 0, 0.5, 0)
+JPLabel.Text = "JumpPower: " .. JumpPower
+JPLabel.TextColor3 = Color3.new(1, 1, 1)
+JPLabel.BackgroundTransparency = 1
+
+local function createBtn(name, pos, callback)
+    local btn = Instance.new("TextButton", Frame)
+    btn.Size = UDim2.new(0.4, 0, 0.2, 0)
+    btn.Position = pos
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    Instance.new("UICorner", btn)
+    btn.MouseButton1Click:Connect(callback)
+end
+
+createBtn("+ WS", UDim2.new(0.05, 0, 0.25, 0), function() WalkSpeed = WalkSpeed + 5; WSLabel.Text = "WalkSpeed: " .. WalkSpeed end)
+createBtn("- WS", UDim2.new(0.55, 0, 0.25, 0), function() WalkSpeed = math.max(16, WalkSpeed - 5); WSLabel.Text = "WalkSpeed: " .. WalkSpeed end)
+createBtn("+ JP", UDim2.new(0.05, 0, 0.75, 0), function() JumpPower = JumpPower + 10; JPLabel.Text = "JumpPower: " .. JumpPower end)
+createBtn("- JP", UDim2.new(0.55, 0, 0.75, 0), function() JumpPower = math.max(50, JumpPower - 10); JPLabel.Text = "JumpPower: " .. JumpPower end)
+
+-- Movement Logic
+RunService.RenderStepped:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        local Humanoid = LocalPlayer.Character.Humanoid
+        if Humanoid.WalkSpeed ~= WalkSpeed then
+            Humanoid.WalkSpeed = WalkSpeed
+        end
+        if Humanoid.JumpPower ~= JumpPower then
+            Humanoid.JumpPower = JumpPower
+        end
+    end
+end)
