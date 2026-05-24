@@ -44,7 +44,7 @@ IncreaseBtn.MouseButton1Click:Connect(function()
 end)
 
 DecreaseBtn.MouseButton1Click:Connect(function()
-    HitboxSize = math.max(2, HitboxSize - 5)
+    HitboxSize = math.max(5, HitboxSize - 5)
     SizeLabel.Text = "Size: " .. HitboxSize
 end)
 
@@ -58,7 +58,7 @@ RunService.RenderStepped:Connect(function()
             if not HitboxObjects[player] then
                 local Border = Instance.new("SelectionBox", RootPart)
                 Border.Color3 = Color3.fromRGB(255, 0, 0)
-                Border.LineThickness = 0.5
+                Border.LineThickness = 0.02
                 Border.Adornee = RootPart
                 HitboxObjects[player] = Border
             end
