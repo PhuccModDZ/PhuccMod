@@ -1,0 +1,128 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Krissz FE | Beta V0.1",
+   LoadingTitle = "Đang khởi tạo Full System...",
+   ConfigurationSaving = {Enabled = false, FileName = "KrisszConfig"}
+})
+
+-- [BIẾN ĐIỀU KHIỂN]
+_G.Aimbot = false; _G.AimPart = "Head"; _G.FOV = 200; _G.Smooth = 0.05
+_G.Hitbox = false; _G.HSize = 6; _G.ESP = false; _G.Highlight = false
+_G.Noclip = false; _G.Fly = false; _G.RGBMode = false; _G.FOVFilled = false
+_G.Speed = 30; _G.Jump = 100
+
+-- [TẠO TABS]
+local CombatTab = Window:CreateTab("Combat", "sword")
+local MoveTab = Window:CreateTab("Movement", "activity")
+local VisualTab = Window:CreateTab("Visuals", "eye")
+local ExploitTab = Window:CreateTab("Exploits", "zap")
+
+-- [COMBAT TAB]
+CombatTab:CreateSection("Aimbot Master")
+CombatTab:CreateToggle({Name = "Enable Aimbot", Callback = function(v) _G.Aimbot = v end})
+CombatTab:CreateDropdown({Name = "Aim Part", Options = {"Head"}, CurrentOption = "Head", Callback = function(v) _G.AimPart = v end})
+CombatTab:CreateSlider({Name = "Smoothing", Range = {0.01, 1}, Increment = 0.01, CurrentValue = 0.05, Callback = function(v) _G.Smooth = v end})
+CombatTab:CreateSection("FOV & Hitbox")
+CombatTab:CreateSlider({Name = "FOV Radius", Range = {50, 800}, Increment = 10, CurrentValue = 200, Callback = function(v) _G.FOV = v end})
+CombatTab:CreateToggle({Name = "Hitbox Expander", Callback = function(v) _G.Hitbox = v end})
+CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 100}, Increment = 1, CurrentValue = 6, Callback = function(v) _G.HSize = v end})
+
+-- [MOVEMENT TAB]
+MoveTab:CreateSlider({Name = "WalkSpeed", Range = {16, 200}, Increment = 1, CurrentValue = 30, Callback = function(v) _G.Speed = v end})
+MoveTab:CreateSlider({Name = "JumpPower", Range = {50, 500}, Increment = 5, CurrentValue = 100, Callback = function(v) _G.Jump = v end})
+
+-- [VISUAL TAB]
+VisualTab:CreateSection("ESP & Visuals")
+VisualTab:CreateToggle({Name = "Enable ESP (Outline + Tracers)", Callback = function(v) _G.ESP = v end})
+VisualTab:CreateToggle({Name = "Highlight Target", Callback = function(v) _G.Highlight = v end})
+VisualTab:CreateToggle({Name = "Enable Rainbow Mode", Callback = function(v) _G.RGBMode = v end})
+
+-- [EXPLOIT TAB]
+ExploitTab:CreateToggle({Name = "Noclip", Callback = function(v) _G.Noclip = v end})
+ExploitTab:CreateToggle({Name = "Fly (Hold X)", Callback = function(v) _G.Fly = v end})
+
+-- [LOGIC HỆ THỐNG]
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Input = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
+local lplr = Players.LocalPlayer
+
+local FOVCircle = Drawing.new("Circle"); FOVCircle.Filled = false; FOVCircle.Thickness = 1.5
+local ESP_Objects = {}; local HighlightObj = Instance.new("Highlight"); HighlightObj.FillTransparency = 0.5
+
+local function GetRGB() return Color3.fromHSV(tick() % 5 / 5, 1, 1) end
+local function CreateDrawing(type, props) local d = Drawing.new(type) for i,v in pairs(props) do d[i] = v end return d end
+
+Players.PlayerAdded:Connect(function(p) 
+    if p ~= lplr then ESP_Objects[p] = {Box = CreateDrawing("Square", {Thickness=1.5, Filled=false, Visible=false}), Tracer = CreateDrawing("Line", {Thickness=1, Visible=false})} end 
+end)
+for _, p in pairs(Players:GetPlayers()) do 
+    if p ~= lplr then ESP_Objects[p] = {Box = CreateDrawing("Square", {Thickness=1.5, Filled=false, Visible=false}), Tracer = CreateDrawing("Line", {Thickness=1, Visible=false})} end 
+end
+
+RunService.RenderStepped:Connect(function()
+    pcall(function()
+        local color = _G.RGBMode and GetRGB() or Color3.fromRGB(255, 255, 255)
+        local char = lplr.Character
+        
+        -- WalkSpeed & JumpPower
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = _G.Speed
+            char.Humanoid.JumpPower = _G.Jump
+        end
+        
+        -- Aimbot FOV
+        FOVCircle.Visible = _G.Aimbot; FOVCircle.Radius = _G.FOV; FOVCircle.Color = color
+        FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+        
+        local closest, dist = nil, _G.FOV
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= lplr and p.Character then
+                -- Hitbox Logic
+                local hrp = p.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then 
+                    hrp.Size = _G.Hitbox and Vector3.new(_G.HSize, _G.HSize, _G.HSize) or Vector3.new(2, 2, 1)
+                    hrp.Transparency = _G.Hitbox and 0.5 or 1
+                    hrp.CanCollide = not _G.Hitbox
+                end
+                
+                -- Aimbot Detection
+                local part = p.Character:FindFirstChild(_G.AimPart)
+                if part then
+                    local pos, on = Camera:WorldToViewportPoint(part.Position)
+                    if on then
+                        local mag = (Vector2.new(pos.X, pos.Y) - FOVCircle.Position).Magnitude
+                        if mag < dist then closest = part; dist = mag end
+                    end
+                end
+            end
+        end
+        
+        if _G.Aimbot and closest then Camera.CFrame = Camera.CFrame:Lerp(CFrame.lookAt(Camera.CFrame.Position, closest.Position), _G.Smooth) end
+
+        -- Highlight
+        if _G.Highlight and closest then HighlightObj.Parent = closest.Parent; HighlightObj.FillColor = color else HighlightObj.Parent = nil end
+        
+        -- ESP Outline + Tracers
+        for p, obj in pairs(ESP_Objects) do
+            local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+            if hrp and _G.ESP then
+                local pos, on = Camera:WorldToViewportPoint(hrp.Position)
+                if on then
+                    obj.Box.Visible = true; obj.Box.Color = color; obj.Box.Filled = false -- Bắt buộc Outline
+                    obj.Box.Size = Vector2.new(50, 70); obj.Box.Position = Vector2.new(pos.X - 25, pos.Y - 35)
+                    
+                    obj.Tracer.Visible = true; obj.Tracer.Color = color
+                    obj.Tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                    obj.Tracer.To = Vector2.new(pos.X, pos.Y)
+                else
+                    obj.Box.Visible = false; obj.Tracer.Visible = false
+                end
+            else
+                obj.Box.Visible = false; obj.Tracer.Visible = false
+            end
+        end
+    end)
+end)
