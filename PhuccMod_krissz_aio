@@ -2,12 +2,12 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Krissz FE | Beta V0.1",
-   LoadingTitle = "Đang khởi tạo Full System...",
+   LoadingTitle = "Khởi tạo Krissz All IN ONE...",
    ConfigurationSaving = {Enabled = false, FileName = "KrisszConfig"}
 })
 
 -- [BIẾN ĐIỀU KHIỂN]
-_G.Aimbot = false; _G.AimPart = "Head"; _G.FOV = 200; _G.Smooth = 0.05
+_G.Aimbot = false; _G.AimPart = "Head"; _G.FOV = 200; _G.Smooth = 0.55
 _G.Hitbox = false; _G.HSize = 6; _G.ESP = false; _G.Highlight = false
 _G.Noclip = false; _G.Fly = false; _G.RGBMode = false; _G.FOVFilled = false
 _G.Speed = 30; _G.Jump = 100
@@ -19,28 +19,29 @@ local VisualTab = Window:CreateTab("Visuals", "eye")
 local ExploitTab = Window:CreateTab("Exploits", "zap")
 
 -- [COMBAT TAB]
-CombatTab:CreateSection("Aimbot Master")
+CombatTab:CreateSection("Aimbot")
 CombatTab:CreateToggle({Name = "Enable Aimbot", Callback = function(v) _G.Aimbot = v end})
 CombatTab:CreateDropdown({Name = "Aim Part", Options = {"Head"}, CurrentOption = "Head", Callback = function(v) _G.AimPart = v end})
-CombatTab:CreateSlider({Name = "Smoothing", Range = {0.01, 1}, Increment = 0.01, CurrentValue = 0.05, Callback = function(v) _G.Smooth = v end})
+CombatTab:CreateSlider({Name = "Smoothing", Range = {0.01, 1}, Increment = 0.01, CurrentValue = 0.55, Callback = function(v) _G.Smooth = v end})
 CombatTab:CreateSection("FOV & Hitbox")
-CombatTab:CreateSlider({Name = "FOV Radius", Range = {50, 800}, Increment = 10, CurrentValue = 200, Callback = function(v) _G.FOV = v end})
+CombatTab:CreateSlider({Name = "FOV Radius", Range = {50, 360}, Increment = 10, CurrentValue = 200, Callback = function(v) _G.FOV = v end})
 CombatTab:CreateToggle({Name = "Hitbox Expander", Callback = function(v) _G.Hitbox = v end})
-CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 100}, Increment = 1, CurrentValue = 6, Callback = function(v) _G.HSize = v end})
+CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 400}, Increment = 1, CurrentValue = 6, Callback = function(v) _G.HSize = v end})
 
 -- [MOVEMENT TAB]
-MoveTab:CreateSlider({Name = "WalkSpeed", Range = {16, 200}, Increment = 1, CurrentValue = 30, Callback = function(v) _G.Speed = v end})
+MoveTab:CreateSlider({Name = "WalkSpeed", Range = {16, 500}, Increment = 1, CurrentValue = 30, Callback = function(v) _G.Speed = v end})
 MoveTab:CreateSlider({Name = "JumpPower", Range = {50, 500}, Increment = 5, CurrentValue = 100, Callback = function(v) _G.Jump = v end})
 
 -- [VISUAL TAB]
 VisualTab:CreateSection("ESP & Visuals")
 VisualTab:CreateToggle({Name = "Enable ESP (Outline + Tracers)", Callback = function(v) _G.ESP = v end})
 VisualTab:CreateToggle({Name = "Highlight Target", Callback = function(v) _G.Highlight = v end})
+VisualTab:CreateSection("Color Mode")
 VisualTab:CreateToggle({Name = "Enable Rainbow Mode", Callback = function(v) _G.RGBMode = v end})
 
 -- [EXPLOIT TAB]
-ExploitTab:CreateToggle({Name = "Noclip", Callback = function(v) _G.Noclip = v end})
-ExploitTab:CreateToggle({Name = "Fly (Hold X)", Callback = function(v) _G.Fly = v end})
+ExploitTab:CreateToggle({Name = "Noclip -ERROR-", Callback = function(v) _G.Noclip = v end})
+ExploitTab:CreateToggle({Name = "Fly (Hold X) -ERROR-", Callback = function(v) _G.Fly = v end})
 
 -- [LOGIC HỆ THỐNG]
 local RunService = game:GetService("RunService")
