@@ -40,6 +40,14 @@ VisualTab:CreateSection("Color Mode")
 VisualTab:CreateToggle({Name = "Enable Rainbow Mode", Callback = function(v) _G.RGBMode = v end})
 
 -- [EXPLOIT TAB]
+-- Cách tích hợp vào Rayfield:
+ExploitTab:CreateButton({Name = "Optimize Game (Fix Lag)",
+    Callback = function()
+        OptimizeGame()
+        Rayfield:Notify({Title = "Optimization", Content = "Đã tối ưu hóa đồ họa, FPS sẽ ổn định hơn!", Duration = 5})
+    end,
+})
+
 ExploitTab:CreateToggle({Name = "Noclip -ERROR-", Callback = function(v) _G.Noclip = v end})
 ExploitTab:CreateToggle({Name = "Fly (Hold X) -ERROR-", Callback = function(v) _G.Fly = v end})
 
@@ -105,8 +113,40 @@ RunService.RenderStepped:Connect(function()
 
         -- Highlight
         if _G.Highlight and closest then HighlightObj.Parent = closest.Parent; HighlightObj.FillColor = color else HighlightObj.Parent = nil end
-        
-        -- ESP Outline + Tracers
+  
+-- [PERFORMANCE BOOSTER LOGIC]
+local function OptimizeGame()
+    local Terrain = workspace:FindFirstChildOfClass("Terrain")
+    if Terrain then
+        Terrain.WaterWaveSize = 0
+        Terrain.WaterWaveSpeed = 0
+        Terrain.WaterReflectance = 0
+        Terrain.WaterTransparency = 0
+    end
+
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("Decal") or v:IsA("Texture") then
+            v.Transparency = 1
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
+            v.Enabled = false
+        elseif v:IsA("MeshPart") then
+            v.Material = Enum.Material.Plastic
+            v.Reflectance = 0
+        elseif v:IsA("BasePart") and not v:IsA("MeshPart") then
+            v.Material = Enum.Material.Plastic
+            v.Reflectance = 0
+        elseif v:IsA("SpecialMesh") then
+            v.TextureId = ""
+        elseif v:IsA("Shirt") or v:IsA("Pants") then
+            v:Destroy()
+        end
+    end
+
+    -- Đặt đồ họa về mức thấp nhất
+    settings().Rendering.QualityLevel = 1
+end
+
+       -- ESP Outline + Tracers
         for p, obj in pairs(ESP_Objects) do
             local hrp = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
             if hrp and _G.ESP then
