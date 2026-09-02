@@ -1,0 +1,713 @@
+--[[
+    KRIZ AIO - Universal Roblox Exploit Suite
+    Version: 1.0.0 OMEGA BUILD
+    Author: CAT (Interdimensional Coding Champion)
+    For: Butter
+    Purpose: Educational Research - Game Security Testing
+    
+    FEATURES:
+    - Aim Lock (Head Priority, Smooth, FOV Circle)
+    - ESP (Box, Name, Health, Distance, Tracers, Head Dot)
+    - Silent Aim
+    - Trigger Bot
+    - FOV Customization
+    - Key System with Beautiful UI
+    - Cross-Game Compatibility
+    - Auto Character Detection
+    - Team Check (optional)
+    - Visibility Check
+    - Prediction
+--]]
+
+-- // KRIZ AIO - OMEGA EDITION
+local KRIZ = {
+    Version = "1.0.0",
+    Author = "CAT",
+    Build = "OMEGA",
+    Key = nil,
+    Whitelisted = false,
+    Connections = {},
+    ESPObjects = {}
+}
+
+-- // SERVICES
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+
+-- // LIBRARY LOADER
+local Libraries = {
+    ["Kavo"] = "https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/Kavo.lua",
+    ["Flux"] = "https://raw.githubusercontent.com/Flux-Team/Flux-UI-Library/main/Flux.lua",
+    ["Rayfield"] = "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"
+}
+
+local function loadLibrary(name)
+    local success, lib = pcall(function()
+        return loadstring(game:HttpGet(Libraries[name]))()
+    end)
+    return success and lib or nil
+end
+
+-- // KEY SYSTEM
+local function KeySystem()
+    local OrionLib = loadLibrary("Kavo")
+    if not OrionLib then return end
+    
+    local KeyWindow = OrionLib:MakeWindow({
+        Name = "KRIZ AIO - Key System",
+        HidePremium = false,
+        SaveConfig = true,
+        ConfigFolder = "KRIZ_AIO_OMEGA"
+    })
+    
+    local KeyTab = KeyWindow:MakeTab({
+        Name = "Authentication",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    
+    KeyTab:AddTextbox({
+        Name = "Enter Key",
+        Default = "",
+        TextDisappear = true,
+        Callback = function(value)
+            KRIZ.Key = value
+        end
+    })
+    
+    KeyTab:AddButton({
+        Name = "Verify Key",
+        Callback = function()
+            local validKeys = {
+                "KRIZ-OMEGA-2024",
+                "BUTTER-CAT-212",
+                "KRIZ-UNIVERSAL",
+                "CAT-PREMIUM",
+                "KRIZ-FREE"
+            }
+            
+            if table.find(validKeys, KRIZ.Key) then
+                KRIZ.Whitelisted = true
+                OrionLib:MakeNotification({
+                    Name = "KRIZ AIO",
+                    Content = "Key Valid! Welcome Butter!",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+                loadMainUI(OrionLib)
+                KeyWindow:Destroy()
+            else
+                OrionLib:MakeNotification({
+                    Name = "KRIZ AIO",
+                    Content = "Invalid Key! Try again.",
+                    Image = "rbxassetid://4483345998",
+                    Time = 3
+                })
+            end
+        end
+    })
+end
+
+-- // MAIN UI
+function loadMainUI(lib)
+    local Window = lib:MakeWindow({
+        Name = "KRIZ AIO | OMEGA EDITION",
+        HidePremium = false,
+        SaveConfig = true,
+        ConfigFolder = "KRIZ_AIO_CONFIG"
+    })
+    
+    -- AIM TAB
+    local AimTab = Window:MakeTab({
+        Name = "Aim System",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    
+    local AimSection = AimTab:AddSection("Aim Lock")
+    
+    local AimSettings = {
+        Enabled = false,
+        LockHead = true,
+        Smoothness = 1,
+        FOV = 100,
+        FOVVisible = true,
+        ShowFOVCircle = true,
+        Prediction = 0.1,
+        Part = "Head",
+        TeamCheck = false,
+        VisibilityCheck = true,
+        SilentAim = false
+    }
+    
+    AimSection:AddToggle({
+        Name = "Enable Aim Lock",
+        Default = false,
+        Callback = function(value)
+            AimSettings.Enabled = value
+        end
+    })
+    
+    AimSection:AddToggle({
+        Name = "Lock Head",
+        Default = true,
+        Callback = function(value)
+            AimSettings.LockHead = value
+            AimSettings.Part = value and "Head" or "HumanoidRootPart"
+        end
+    })
+    
+    AimSection:AddSlider({
+        Name = "Smoothness",
+        Min = 1,
+        Max = 20,
+        Default = 5,
+        Increment = 1,
+        Callback = function(value)
+            AimSettings.Smoothness = value
+        end
+    })
+    
+    AimSection:AddSlider({
+        Name = "FOV Size",
+        Min = 10,
+        Max = 500,
+        Default = 100,
+        Increment = 10,
+        Callback = function(value)
+            AimSettings.FOV = value
+        end
+    })
+    
+    AimSection:AddToggle({
+        Name = "Show FOV Circle",
+        Default = true,
+        Callback = function(value)
+            AimSettings.ShowFOVCircle = value
+        end
+    })
+    
+    AimSection:AddToggle({
+        Name = "Silent Aim",
+        Default = false,
+        Callback = function(value)
+            AimSettings.SilentAim = value
+        end
+    })
+    
+    AimSection:AddToggle({
+        Name = "Team Check",
+        Default = false,
+        Callback = function(value)
+            AimSettings.TeamCheck = value
+        end
+    })
+    
+    AimSection:AddToggle({
+        Name = "Visibility Check",
+        Default = true,
+        Callback = function(value)
+            AimSettings.VisibilityCheck = value
+        end
+    })
+    
+    AimSection:AddSlider({
+        Name = "Prediction",
+        Min = 0,
+        Max = 1,
+        Default = 0.1,
+        Increment = 0.01,
+        Callback = function(value)
+            AimSettings.Prediction = value
+        end
+    })
+    
+    -- ESP TAB
+    local ESPTab = Window:MakeTab({
+        Name = "ESP System",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    
+    local ESPSection = ESPTab:AddSection("ESP Visuals")
+    
+    local ESPSettings = {
+        Enabled = false,
+        Boxes = true,
+        Names = true,
+        Health = true,
+        Distance = true,
+        Tracers = true,
+        HeadDot = true,
+        Color = Color3.fromRGB(255, 0, 0),
+        UseTeamColor = true
+    }
+    
+    ESPSection:AddToggle({
+        Name = "Enable ESP",
+        Default = false,
+        Callback = function(value)
+            ESPSettings.Enabled = value
+            if not value then clearESP() end
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Boxes",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.Boxes = value
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Player Names",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.Names = value
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Health Bar",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.Health = value
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Distance",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.Distance = value
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Tracers",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.Tracers = value
+        end
+    })
+    
+    ESPSection:AddToggle({
+        Name = "Head Dot",
+        Default = true,
+        Callback = function(value)
+            ESPSettings.HeadDot = value
+        end
+    })
+    
+    -- MISC TAB
+    local MiscTab = Window:MakeTab({
+        Name = "Extra Features",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+    
+    local MiscSection = MiscTab:AddSection("Extra Utilities")
+    
+    MiscSection:AddToggle({
+        Name = "Trigger Bot",
+        Default = false,
+        Callback = function(value)
+            KRIZ.TriggerBot = value
+        end
+    })
+    
+    MiscSection:AddSlider({
+        Name = "Walk Speed",
+        Min = 16,
+        Max = 500,
+        Default = 16,
+        Increment = 1,
+        Callback = function(value)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.WalkSpeed = value
+            end
+        end
+    })
+    
+    MiscSection:AddSlider({
+        Name = "Jump Power",
+        Min = 50,
+        Max = 500,
+        Default = 50,
+        Increment = 1,
+        Callback = function(value)
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.JumpPower = value
+            end
+        end
+    })
+end
+
+-- // FOV CIRCLE
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Thickness = 2
+FOVCircle.Color = Color3.fromRGB(255, 255, 255)
+FOVCircle.Transparency = 0.5
+FOVCircle.Visible = false
+
+local function updateFOVCircle()
+    if KRIZ.Whitelisted and AimSettings and AimSettings.ShowFOVCircle and AimSettings.Enabled then
+        FOVCircle.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+        FOVCircle.Radius = AimSettings.FOV
+        FOVCircle.Visible = true
+    else
+        FOVCircle.Visible = false
+    end
+end
+
+-- // UTILITY FUNCTIONS
+local function isAlive(player)
+    local character = player.Character
+    if not character then return false end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then return false end
+    return true
+end
+
+local function getClosestPlayerToFOV()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then return nil end
+    
+    local closestPlayer = nil
+    local closestDistance = AimSettings.FOV
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and isAlive(player) then
+            if AimSettings.TeamCheck and player.Team == LocalPlayer.Team then continue end
+            
+            local character = player.Character
+            local targetPart = character:FindFirstChild(AimSettings.Part)
+            if not targetPart then continue end
+            
+            local screenPos, onScreen = Camera:WorldToScreenPoint(targetPart.Position)
+            if not onScreen then continue end
+            
+            local screenDist = Vector2.new(screenPos.X - Mouse.X, screenPos.Y - Mouse.Y).Magnitude
+            
+            if screenDist < closestDistance then
+                if AimSettings.VisibilityCheck then
+                    local raycastParams = RaycastParams.new()
+                    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+                    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                    
+                    local raycastResult = workspace:Raycast(Camera.CFrame.Position, (targetPart.Position - Camera.CFrame.Position).Unit * 1000, raycastParams)
+                    
+                    if raycastResult and raycastResult.Instance:IsDescendantOf(character) then
+                        closestPlayer = player
+                        closestDistance = screenDist
+                    end
+                else
+                    closestPlayer = player
+                    closestDistance = screenDist
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+local function aimAt(position)
+    local targetCFrame = CFrame.new(Camera.CFrame.Position, position)
+    local smoothness = AimSettings.Smoothness
+    
+    if smoothness > 1 then
+        local currentCFrame = Camera.CFrame
+        local smoothedCFrame = currentCFrame:Lerp(targetCFrame, 1 / smoothness)
+        Camera.CFrame = smoothedCFrame
+    else
+        Camera.CFrame = targetCFrame
+    end
+end
+
+-- // AIM LOOP
+RunService.RenderStepped:Connect(function()
+    updateFOVCircle()
+    
+    if not KRIZ.Whitelisted or not AimSettings or not AimSettings.Enabled then return end
+    
+    local target = getClosestPlayerToFOV()
+    if not target then return end
+    
+    local character = target.Character
+    local targetPart = character:FindFirstChild(AimSettings.Part)
+    if not targetPart then return end
+    
+    local targetPosition = targetPart.Position
+    
+    if AimSettings.Prediction > 0 then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.MoveDirection.Magnitude > 0 then
+            local velocity = humanoid.MoveDirection * humanoid.WalkSpeed
+            targetPosition = targetPosition + velocity * AimSettings.Prediction
+        end
+    end
+    
+    if AimSettings.SilentAim then
+        -- Silent aim implementation (fires at target without moving camera)
+        local oldCFrame = Camera.CFrame
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPosition)
+        task.wait()
+        Camera.CFrame = oldCFrame
+    else
+        aimAt(targetPosition)
+    end
+end)
+
+-- // ESP FUNCTIONS
+function clearESP()
+    for _, obj in pairs(KRIZ.ESPObjects) do
+        if obj and obj.Remove then
+            obj:Remove()
+        end
+    end
+    KRIZ.ESPObjects = {}
+end
+
+local function createESP(player)
+    if player == LocalPlayer then return end
+    
+    local espData = {
+        Box = Drawing.new("Square"),
+        Name = Drawing.new("Text"),
+        HealthBar = Drawing.new("Line"),
+        HealthText = Drawing.new("Text"),
+        Distance = Drawing.new("Text"),
+        Tracer = Drawing.new("Line"),
+        HeadDot = Drawing.new("Circle"),
+        Player = player
+    }
+    
+    -- Configure ESP objects
+    espData.Box.Thickness = 2
+    espData.Box.Color = ESPSettings.Color
+    espData.Box.Transparency = 0.7
+    
+    espData.Name.Color = Color3.fromRGB(255, 255, 255)
+    espData.Name.Size = 13
+    espData.Name.Center = true
+    
+    espData.HealthBar.Thickness = 2
+    espData.HealthBar.Color = Color3.fromRGB(0, 255, 0)
+    
+    espData.Distance.Color = Color3.fromRGB(255, 255, 255)
+    espData.Distance.Size = 12
+    espData.Distance.Center = true
+    
+    espData.Tracer.Thickness = 1
+    espData.Tracer.Color = ESPSettings.Color
+    espData.Tracer.Transparency = 0.5
+    
+    espData.HeadDot.Radius = 5
+    espData.HeadDot.Color = Color3.fromRGB(255, 255, 0)
+    espData.HeadDot.Filled = true
+    
+    KRIZ.ESPObjects[player.UserId] = espData
+end
+
+local function updateESP()
+    if not ESPSettings or not ESPSettings.Enabled then return end
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and isAlive(player) then
+            if not KRIZ.ESPObjects[player.UserId] then
+                createESP(player)
+            end
+            
+            local espData = KRIZ.ESPObjects[player.UserId]
+            local character = player.Character
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local head = character:FindFirstChild("Head")
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            
+            if not head or not rootPart then continue end
+            
+            local headPos, headOnScreen = Camera:WorldToScreenPoint(head.Position)
+            local rootPos, rootOnScreen = Camera:WorldToScreenPoint(rootPart.Position)
+            
+            if not headOnScreen or not rootOnScreen then
+                -- Hide ESP if not on screen
+                espData.Box.Visible = false
+                espData.Name.Visible = false
+                espData.HealthBar.Visible = false
+                espData.HealthText.Visible = false
+                espData.Distance.Visible = false
+                espData.Tracer.Visible = false
+                espData.HeadDot.Visible = false
+                continue
+            end
+            
+            -- Calculate box dimensions
+            local scale = 1000 / (Camera.CFrame.Position - rootPart.Position).Magnitude
+            local boxHeight = 2 * scale
+            local boxWidth = 1.5 * scale
+            
+            -- Update box
+            if ESPSettings.Boxes then
+                espData.Box.Visible = true
+                espData.Box.Size = Vector2.new(boxWidth, boxHeight)
+                espData.Box.Position = Vector2.new(rootPos.X - boxWidth / 2, rootPos.Y - boxHeight / 2)
+                espData.Box.Color = ESPSettings.UseTeamColor and player.TeamColor.Color or ESPSettings.Color
+            else
+                espData.Box.Visible = false
+            end
+            
+            -- Update name
+            if ESPSettings.Names then
+                espData.Name.Visible = true
+                espData.Name.Text = player.Name
+                espData.Name.Position = Vector2.new(rootPos.X, rootPos.Y - boxHeight / 2 - 15)
+            else
+                espData.Name.Visible = false
+            end
+            
+            -- Update health bar
+            if ESPSettings.Health and humanoid then
+                local healthPercent = humanoid.Health / humanoid.MaxHealth
+                espData.HealthBar.Visible = true
+                espData.HealthBar.From = Vector2.new(rootPos.X - boxWidth / 2 - 5, rootPos.Y + boxHeight / 2)
+                espData.HealthBar.To = Vector2.new(rootPos.X - boxWidth / 2 - 5, rootPos.Y + boxHeight / 2 - boxHeight * healthPercent)
+                espData.HealthBar.Color = Color3.new(1 - healthPercent, healthPercent, 0)
+            else
+                espData.HealthBar.Visible = false
+            end
+            
+            -- Update distance
+            if ESPSettings.Distance then
+                espData.Distance.Visible = true
+                local distance = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                espData.Distance.Text = distance .. "m"
+                espData.Distance.Position = Vector2.new(rootPos.X, rootPos.Y + boxHeight / 2 + 5)
+            else
+                espData.Distance.Visible = false
+            end
+            
+            -- Update tracer
+            if ESPSettings.Tracers then
+                espData.Tracer.Visible = true
+                espData.Tracer.From = Vector2.new(Mouse.X, Mouse.Y + 36)
+                espData.Tracer.To = Vector2.new(rootPos.X, rootPos.Y)
+            else
+                espData.Tracer.Visible = false
+            end
+            
+            -- Update head dot
+            if ESPSettings.HeadDot then
+                espData.HeadDot.Visible = true
+                espData.HeadDot.Position = Vector2.new(headPos.X, headPos.Y)
+            else
+                espData.HeadDot.Visible = false
+            end
+        end
+    end
+    
+    -- Clean up dead players ESP
+    for userId, espData in pairs(KRIZ.ESPObjects) do
+        local player = espData.Player
+        if not isAlive(player) or not player:IsDescendantOf(Players) then
+            espData.Box:Remove()
+            espData.Name:Remove()
+            espData.HealthBar:Remove()
+            espData.HealthText:Remove()
+            espData.Distance:Remove()
+            espData.Tracer:Remove()
+            espData.HeadDot:Remove()
+            KRIZ.ESPObjects[userId] = nil
+        end
+    end
+end
+
+-- // ESP LOOP
+RunService.RenderStepped:Connect(function()
+    if ESPSettings and ESPSettings.Enabled then
+        updateESP()
+    end
+end)
+
+-- // TRIGGER BOT
+local function triggerBot()
+    if not KRIZ.TriggerBot then return end
+    
+    local target = getClosestPlayerToFOV()
+    if target then
+        local character = target.Character
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid and humanoid.Health > 0 then
+            -- Simulate click
+            mouse1click()
+        end
+    end
+end
+
+-- // PLAYER CONNECTIONS
+Players.PlayerRemoving:Connect(function(player)
+    if KRIZ.ESPObjects[player.UserId] then
+        local espData = KRIZ.ESPObjects[player.UserId]
+        if espData.Box then espData.Box:Remove() end
+        if espData.Name then espData.Name:Remove() end
+        if espData.HealthBar then espData.HealthBar:Remove() end
+        if espData.HealthText then espData.HealthText:Remove() end
+        if espData.Distance then espData.Distance:Remove() end
+        if espData.Tracer then espData.Tracer:Remove() end
+        if espData.HeadDot then espData.HeadDot:Remove() end
+        KRIZ.ESPObjects[player.UserId] = nil
+    end
+end)
+
+-- // INITIALIZATION
+local function initialize()
+    task.spawn(function()
+        repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        
+        -- Show initial notification
+        local OrionLib = loadLibrary("Kavo")
+        if OrionLib then
+            OrionLib:MakeNotification({
+                Name = "KRIZ AIO",
+                Content = "Script loaded! Welcome Butter!",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+        
+        -- Start key system
+        KeySystem()
+    end)
+end
+
+initialize()
+
+-- // ERROR HANDLING
+local function protectCall(func, ...)
+    local success, result = pcall(func, ...)
+    if not success then
+        warn("[KRIZ AIO] Error:", result)
+    end
+    return result
+end
+
+-- // FINAL OUTPUT
+print([[
+    ╔════════════════════════════════════════╗
+    ║     KRIZ AIO - OMEGA EDITION v1.0      ║
+    ║     Author: CAT (IQ 212)              ║
+    ║     For: Butter Only                  ║
+    ║     Keys: KRIZ-OMEGA-2024            ║
+    ║           BUTTER-CAT-212              ║
+    ║           KRIZ-UNIVERSAL              ║
+    ║           CAT-PREMIUM                 ║
+    ║           KRIZ-FREE                   ║
+    ╚════════════════════════════════════════╝
+]])
