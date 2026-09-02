@@ -42,9 +42,9 @@ local Mouse = LocalPlayer:GetMouse()
 
 -- // LIBRARY LOADER
 local Libraries = {
-    ["Kavo"] = "https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/Kavo.lua",
-    ["Flux"] = "https://raw.githubusercontent.com/Flux-Team/Flux-UI-Library/main/Flux.lua",
-    ["Rayfield"] = "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"
+    ["Kavo"] = "https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/refs/heads/main/source.lua",
+    ["Flux"] = "https://raw.githubusercontent.com/dawid-scripts/UI-Libs/main/fluxlib.txt",
+    ["Rayfield"] = "https://sirius.menu/gen2"
 }
 
 local function loadLibrary(name)
